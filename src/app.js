@@ -42,7 +42,9 @@ window.addEventListener('DOMContentLoaded', () => {
     sun.shadow.camera.right = sun.shadow.camera.top = 8;
     scene.add(sun);
 
-    scene.add(Object.assign(new THREE.DirectionalLight(0x8899cc, 0.3), { position: new THREE.Vector3(-6, 4, -6) }));
+    const fillLight = new THREE.DirectionalLight(0x8899cc, 0.3);
+    fillLight.position.set(-6, 4, -6);
+    scene.add(fillLight);
 
     // --- Materials ---
     const mats = {
