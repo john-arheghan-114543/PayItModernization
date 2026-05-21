@@ -99,6 +99,39 @@
             flex-direction: column;
             gap: 6px;
         }
+
+        #move-counter {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.85);
+            pointer-events: none;
+            min-width: 130px;
+        }
+        #move-counter .label {
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 2px;
+        }
+        #move-counter .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        #move-counter .name { font-weight: 600; }
+        #move-counter .count { font-variant-numeric: tabular-nums; font-weight: 700; }
+        #move-counter .white .name { color: #f5e8b0; }
+        #move-counter .black .name { color: #aab4d8; }
     </style>
 </head>
 <body>
@@ -109,6 +142,11 @@
     </div>
     <div id="canvas-container">
         <canvas id="chess-canvas"></canvas>
+        <div id="move-counter" aria-live="polite">
+            <div class="label">Moves</div>
+            <div class="row white"><span class="name">White</span><span class="count" id="white-move-count">0</span></div>
+            <div class="row black"><span class="name">Black</span><span class="count" id="black-move-count">0</span></div>
+        </div>
         <div id="hint">Click to select &amp; move &nbsp;·&nbsp; Left-drag to orbit &nbsp;·&nbsp; Scroll to zoom</div>
     </div>
 

@@ -11,6 +11,7 @@ class ChessGame {
         this.validMoves = [];
         this.gameOver = false;
         this.winner = null;
+        this.moveCounts = { [COLORS.WHITE]: 0, [COLORS.BLACK]: 0 };
     }
 
     _initBoard() {
@@ -175,9 +176,10 @@ class ChessGame {
             this.board[to] = { type: PIECES.QUEEN, color: piece.color };
         this.selectedSquare = null;
         this.validMoves = [];
+        this.moveCounts[piece.color] += 1;
         const nextColor = this.turn === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
         this.turn = nextColor;
-        const result = { type: 'moved', from, to, piece, captured };
+        const result = { type: 'moved', from, to, piece, captured, moveCounts: { ...this.moveCounts } };
         if (this.isCheckmate(nextColor)) {
             this.gameOver = true; this.winner = piece.color; result.checkmate = true;
         } else if (this.isStalemate(nextColor)) {

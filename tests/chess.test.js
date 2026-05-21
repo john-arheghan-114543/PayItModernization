@@ -207,4 +207,62 @@ describe('ChessGame', () => {
             expect(game.getPiece(4, 4)).toBeNull();
         });
     });
+
+    describe('move counter', () => {
+        test('move counts start at zero for both players', () => {
+            expect(game.moveCounts[COLORS.WHITE]).toBe(0);
+            expect(game.moveCounts[COLORS.BLACK]).toBe(0);
+        });
+
+        test('white move increments only white count', () => {
+            game.selectSquare(game.rowColToIndex(6, 4));
+            game.selectSquare(game.rowColToIndex(4, 4));
+            expect(game.moveCounts[COLORS.WHITE]).toBe(1);
+            expect(game.moveCounts[COLORS.BLACK]).toBe(0);
+        });
+
+        test('black move increments only black count', () => {
+            game.selectSquare(game.rowColToIndex(6, 4));
+            game.selectSquare(game.rowColToIndex(4, 4));
+            game.selectSquare(game.rowColToIndex(1, 4));
+            game.selectSquare(game.rowColToIndex(3, 4));
+            expect(game.moveCounts[COLORS.WHITE]).toBe(1);
+            expect(game.moveCounts[COLORS.BLACK]).toBe(1);
+        });
+
+        test('counts accumulate across multiple moves', () => {
+            // 1. e4 e5  2. Nf3 Nc6
+            game.selectSquare(game.rowColToIndex(6, 4));
+            game.selectSquare(game.rowColToIndex(4, 4));
+            game.selectSquare(game.rowColToIndex(1, 4));
+            game.selectSquare(game.rowColToIndex(3, 4));
+            game.selectSquare(game.rowColToIndex(7, 6));
+            game.selectSquare(game.rowColToIndex(5, 5));
+            game.selectSquare(game.rowColToIndex(0, 1));
+            game.selectSquare(game.rowColToIndex(2, 2));
+            expect(game.moveCounts[COLORS.WHITE]).toBe(2);
+            expect(game.moveCounts[COLORS.BLACK]).toBe(2);
+        });
+
+        test('selecting a piece without moving does not change counts', () => {
+            game.selectSquare(game.rowColToIndex(6, 4));
+            expect(game.moveCounts[COLORS.WHITE]).toBe(0);
+            expect(game.moveCounts[COLORS.BLACK]).toBe(0);
+        });
+
+        test('move result reports current move counts', () => {
+            game.selectSquare(game.rowColToIndex(6, 4));
+            const result = game.selectSquare(game.rowColToIndex(4, 4));
+            expect(result.type).toBe('moved');
+            expect(result.moveCounts).toEqual({ [COLORS.WHITE]: 1, [COLORS.BLACK]: 0 });
+        });
+
+        test('reset zeroes the move counts', () => {
+            game.selectSquare(game.rowColToIndex(6, 4));
+            game.selectSquare(game.rowColToIndex(4, 4));
+            game.reset();
+            expect(game.moveCounts[COLORS.WHITE]).toBe(0);
+            expect(game.moveCounts[COLORS.BLACK]).toBe(0);
+        });
+    });
 });

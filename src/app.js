@@ -3,6 +3,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('canvas-container');
     const statusEl = document.getElementById('status');
     const resetBtn = document.getElementById('reset-btn');
+    const whiteMoveCountEl = document.getElementById('white-move-count');
+    const blackMoveCountEl = document.getElementById('black-move-count');
 
     const game = new ChessGame();
 
@@ -234,6 +236,11 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function updateMoveCounter() {
+        whiteMoveCountEl.textContent = game.moveCounts[COLORS.WHITE];
+        blackMoveCountEl.textContent = game.moveCounts[COLORS.BLACK];
+    }
+
     function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
     // --- Input ---
@@ -270,7 +277,10 @@ window.addEventListener('DOMContentLoaded', () => {
         if (squareIndex === undefined) return;
 
         const result = game.selectSquare(squareIndex);
-        if (result.type === 'moved') placePieces();
+        if (result.type === 'moved') {
+            placePieces();
+            updateMoveCounter();
+        }
         updateHighlights();
         updateStatus();
     });
@@ -280,6 +290,7 @@ window.addEventListener('DOMContentLoaded', () => {
         placePieces();
         updateHighlights();
         updateStatus();
+        updateMoveCounter();
     });
 
     // --- Resize ---
@@ -296,6 +307,7 @@ window.addEventListener('DOMContentLoaded', () => {
     placePieces();
     updateHighlights();
     updateStatus();
+    updateMoveCounter();
 
     (function animate() {
         requestAnimationFrame(animate);
