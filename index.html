@@ -132,6 +132,69 @@
         #move-counter .count { font-variant-numeric: tabular-nums; font-weight: 700; }
         #move-counter .white .name { color: #f5e8b0; }
         #move-counter .black .name { color: #aab4d8; }
+
+        #move-history {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.85);
+            width: 240px;
+            max-height: calc(100% - 28px);
+            display: flex;
+            flex-direction: column;
+        }
+        #move-history .label {
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 6px;
+        }
+        #move-history .columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            overflow-y: auto;
+            font-variant-numeric: tabular-nums;
+        }
+        #move-history .col-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            margin-bottom: 4px;
+        }
+        #move-history .white .col-title { color: #f5e8b0; }
+        #move-history .black .col-title { color: #aab4d8; }
+        #move-history ol {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        #move-history li {
+            display: flex;
+            gap: 6px;
+            font-size: 0.82rem;
+        }
+        #move-history li .num {
+            color: rgba(255, 255, 255, 0.4);
+            min-width: 1.6em;
+            text-align: right;
+        }
+        #move-history .empty {
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 0.78rem;
+        }
     </style>
 </head>
 <body>
@@ -146,6 +209,19 @@
             <div class="label">Moves</div>
             <div class="row white"><span class="name">White</span><span class="count" id="white-move-count">0</span></div>
             <div class="row black"><span class="name">Black</span><span class="count" id="black-move-count">0</span></div>
+        </div>
+        <div id="move-history" aria-live="polite">
+            <div class="label">Move History</div>
+            <div class="columns">
+                <div class="white">
+                    <div class="col-title">White</div>
+                    <ol id="white-move-list"></ol>
+                </div>
+                <div class="black">
+                    <div class="col-title">Black</div>
+                    <ol id="black-move-list"></ol>
+                </div>
+            </div>
         </div>
         <div id="hint">Click to select &amp; move &nbsp;·&nbsp; Left-drag to orbit &nbsp;·&nbsp; Scroll to zoom</div>
     </div>

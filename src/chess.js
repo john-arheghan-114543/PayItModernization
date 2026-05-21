@@ -12,6 +12,22 @@ class ChessGame {
         this.gameOver = false;
         this.winner = null;
         this.moveCounts = { [COLORS.WHITE]: 0, [COLORS.BLACK]: 0 };
+        this.moveHistory = { [COLORS.WHITE]: [], [COLORS.BLACK]: [] };
+    }
+
+    _squareName(index) {
+        const { row, col } = this.indexToRowCol(index);
+        return String.fromCharCode(97 + col) + (8 - row);
+    }
+
+    _notation(from, to, piece, captured, promoted) {
+        const prefix = piece.type === PIECES.PAWN ? '' : piece.type;
+        const sep = captured ? 'x' : '';
+        const src = piece.type === PIECES.PAWN && captured
+            ? this._squareName(from).charAt(0)
+            : '';
+        const promo = promoted ? '=' + PIECES.QUEEN : '';
+        return prefix + src + sep + this._squareName(to) + promo;
     }
 
     _initBoard() {
@@ -172,21 +188,32 @@ class ChessGame {
         this.board[to] = this.board[from];
         this.board[from] = null;
         const { row } = this.indexToRowCol(to);
-        if (piece.type === PIECES.PAWN && (row === 0 || row === 7))
+        const promoted = piece.type === PIECES.PAWN && (row === 0 || row === 7);
+        if (promoted)
             this.board[to] = { type: PIECES.QUEEN, color: piece.color };
         this.selectedSquare = null;
         this.validMoves = [];
         this.moveCounts[piece.color] += 1;
         const nextColor = this.turn === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
         this.turn = nextColor;
+        let notation = this._notation(from, to, piece, captured, promoted);
         const result = { type: 'moved', from, to, piece, captured, moveCounts: { ...this.moveCounts } };
         if (this.isCheckmate(nextColor)) {
             this.gameOver = true; this.winner = piece.color; result.checkmate = true;
+            notation += '#';
         } else if (this.isStalemate(nextColor)) {
             this.gameOver = true; result.stalemate = true;
         } else if (this.isInCheck(nextColor)) {
             result.check = true;
+            notation += '+';
         }
+        const entry = { from, to, piece, captured, promoted, notation };
+        this.moveHistory[piece.color].push(entry);
+        result.notation = notation;
+        result.moveHistory = {
+            [COLORS.WHITE]: [...this.moveHistory[COLORS.WHITE]],
+            [COLORS.BLACK]: [...this.moveHistory[COLORS.BLACK]],
+        };
         return result;
     }
 }
