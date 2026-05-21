@@ -237,14 +237,23 @@ window.addEventListener('DOMContentLoaded', () => {
     function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
     // --- Input ---
+    // Use pointer events because OrbitControls calls preventDefault() on
+    // pointerdown, which suppresses the synthesized `click` event on the canvas.
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     const dragStart = new THREE.Vector2();
+    let pointerDownButton = -1;
 
     canvas.addEventListener('contextmenu', e => e.preventDefault());
-    canvas.addEventListener('mousedown', e => { if (e.button === 0) dragStart.set(e.clientX, e.clientY); });
+    canvas.addEventListener('pointerdown', e => {
+        if (e.button !== 0) return;
+        pointerDownButton = 0;
+        dragStart.set(e.clientX, e.clientY);
+    });
 
-    canvas.addEventListener('click', e => {
+    canvas.addEventListener('pointerup', e => {
+        if (e.button !== 0 || pointerDownButton !== 0) return;
+        pointerDownButton = -1;
         if (game.gameOver) return;
         if (Math.hypot(e.clientX - dragStart.x, e.clientY - dragStart.y) > 6) return;
 
