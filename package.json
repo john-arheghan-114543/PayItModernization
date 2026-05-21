@@ -1,10 +1,11 @@
 {
   "name": "seed-pim",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "3D Chess Web Application",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "start": "npx serve ."
   },
   "repository": {
     "type": "git",
@@ -17,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/john-arheghan-114543/PayItModernization/issues"
   },
-  "homepage": "https://github.com/john-arheghan-114543/PayItModernization#readme"
+  "homepage": "https://github.com/john-arheghan-114543/PayItModernization#readme",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
 }
