@@ -265,4 +265,84 @@ describe('ChessGame', () => {
             expect(game.moveCounts[COLORS.BLACK]).toBe(0);
         });
     });
+
+    describe('move history', () => {
+        test('move history starts empty for both players', () => {
+            expect(game.moveHistory[COLORS.WHITE]).toEqual([]);
+            expect(game.moveHistory[COLORS.BLACK]).toEqual([]);
+        });
+
+        test('white pawn move e2-e4 is recorded with notation', () => {
+            game.selectSquare(game.rowColToIndex(6, 4));
+            game.selectSquare(game.rowColToIndex(4, 4));
+            expect(game.moveHistory[COLORS.WHITE]).toHaveLength(1);
+            expect(game.moveHistory[COLORS.WHITE][0].notation).toBe('e4');
+            expect(game.moveHistory[COLORS.BLACK]).toHaveLength(0);
+        });
+
+        test('knight move uses N prefix', () => {
+            game.selectSquare(game.rowColToIndex(7, 6));
+            game.selectSquare(game.rowColToIndex(5, 5));
+            expect(game.moveHistory[COLORS.WHITE][0].notation).toBe('Nf3');
+        });
+
+        test('pawn capture uses file-prefix and x', () => {
+            // 1. e4 d5 2. exd5
+            game.selectSquare(game.rowColToIndex(6, 4));
+            game.selectSquare(game.rowColToIndex(4, 4));
+            game.selectSquare(game.rowColToIndex(1, 3));
+            game.selectSquare(game.rowColToIndex(3, 3));
+            game.selectSquare(game.rowColToIndex(4, 4));
+            game.selectSquare(game.rowColToIndex(3, 3));
+            expect(game.moveHistory[COLORS.WHITE][1].notation).toBe('exd5');
+            expect(game.moveHistory[COLORS.WHITE][1].captured).toMatchObject({ type: PIECES.PAWN, color: COLORS.BLACK });
+        });
+
+        test('promotion notation appends =Q', () => {
+            game.board = Array(64).fill(null);
+            game.board[game.rowColToIndex(7, 4)] = { type: PIECES.KING, color: COLORS.WHITE };
+            // black king on e6 — off the promoted queen's lines of attack
+            game.board[game.rowColToIndex(2, 4)] = { type: PIECES.KING, color: COLORS.BLACK };
+            game.board[game.rowColToIndex(1, 0)] = { type: PIECES.PAWN, color: COLORS.WHITE };
+            game._doMove(game.rowColToIndex(1, 0), game.rowColToIndex(0, 0));
+            expect(game.moveHistory[COLORS.WHITE][0].notation).toBe('a8=Q');
+            expect(game.moveHistory[COLORS.WHITE][0].promoted).toBe(true);
+        });
+
+        test('checkmate notation appends #', () => {
+            // scholar's mate
+            const moves = [
+                [6, 4, 4, 4], [1, 4, 3, 4],
+                [7, 5, 4, 2], [0, 1, 2, 2],
+                [7, 3, 3, 7], [0, 6, 2, 5],
+                [3, 7, 1, 5],
+            ];
+            for (const [r1, c1, r2, c2] of moves) {
+                game.selectSquare(game.rowColToIndex(r1, c1));
+                game.selectSquare(game.rowColToIndex(r2, c2));
+            }
+            const last = game.moveHistory[COLORS.WHITE].at(-1);
+            expect(last.notation.endsWith('#')).toBe(true);
+        });
+
+        test('move result includes notation and a copy of move history', () => {
+            game.selectSquare(game.rowColToIndex(6, 4));
+            const result = game.selectSquare(game.rowColToIndex(4, 4));
+            expect(result.notation).toBe('e4');
+            expect(result.moveHistory[COLORS.WHITE].map(m => m.notation)).toEqual(['e4']);
+            // mutating the returned copy must not affect the game's internal history
+            result.moveHistory[COLORS.WHITE].push({ notation: 'tampered' });
+            expect(game.moveHistory[COLORS.WHITE]).toHaveLength(1);
+        });
+
+        test('reset clears move history for both players', () => {
+            game.selectSquare(game.rowColToIndex(6, 4));
+            game.selectSquare(game.rowColToIndex(4, 4));
+            game.selectSquare(game.rowColToIndex(1, 4));
+            game.selectSquare(game.rowColToIndex(3, 4));
+            game.reset();
+            expect(game.moveHistory[COLORS.WHITE]).toEqual([]);
+            expect(game.moveHistory[COLORS.BLACK]).toEqual([]);
+        });
+    });
 });

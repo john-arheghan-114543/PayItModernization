@@ -5,6 +5,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const resetBtn = document.getElementById('reset-btn');
     const whiteMoveCountEl = document.getElementById('white-move-count');
     const blackMoveCountEl = document.getElementById('black-move-count');
+    const whiteMoveListEl = document.getElementById('white-move-list');
+    const blackMoveListEl = document.getElementById('black-move-list');
 
     const game = new ChessGame();
 
@@ -241,6 +243,35 @@ window.addEventListener('DOMContentLoaded', () => {
         blackMoveCountEl.textContent = game.moveCounts[COLORS.BLACK];
     }
 
+    function renderMoveList(listEl, moves) {
+        listEl.replaceChildren();
+        if (moves.length === 0) {
+            const empty = document.createElement('li');
+            empty.className = 'empty';
+            empty.textContent = 'No moves yet';
+            listEl.appendChild(empty);
+            return;
+        }
+        moves.forEach((entry, i) => {
+            const li = document.createElement('li');
+            const num = document.createElement('span');
+            num.className = 'num';
+            num.textContent = `${i + 1}.`;
+            const notation = document.createElement('span');
+            notation.className = 'notation';
+            notation.textContent = entry.notation;
+            li.appendChild(num);
+            li.appendChild(notation);
+            listEl.appendChild(li);
+        });
+        listEl.scrollTop = listEl.scrollHeight;
+    }
+
+    function updateMoveHistory() {
+        renderMoveList(whiteMoveListEl, game.moveHistory[COLORS.WHITE]);
+        renderMoveList(blackMoveListEl, game.moveHistory[COLORS.BLACK]);
+    }
+
     function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
     // --- Input ---
@@ -289,6 +320,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (result.type === 'moved') {
             placePieces();
             updateMoveCounter();
+            updateMoveHistory();
         }
         updateHighlights();
         updateStatus();
@@ -300,6 +332,7 @@ window.addEventListener('DOMContentLoaded', () => {
         updateHighlights();
         updateStatus();
         updateMoveCounter();
+        updateMoveHistory();
     });
 
     // --- Resize ---
@@ -317,6 +350,7 @@ window.addEventListener('DOMContentLoaded', () => {
     updateHighlights();
     updateStatus();
     updateMoveCounter();
+    updateMoveHistory();
 
     (function animate() {
         requestAnimationFrame(animate);
